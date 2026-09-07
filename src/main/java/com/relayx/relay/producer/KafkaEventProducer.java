@@ -2,12 +2,15 @@ package com.relayx.relay.producer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.concurrent.TimeoutException;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.internals.RecordHeader;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Component
 @RequiredArgsConstructor
@@ -16,10 +19,28 @@ public class KafkaEventProducer {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+    /**
+     * Publish an event to Kafka without an eventId header.
+     * Use this only if idempotency is not required.
+     */
     public void publish(String topic, String key, String payload) {
-        log.debug("Publishing event to topic: {}, key: {}", topic, key);
+        publish(topic, key, payload, null);
+    }
+
+    /**
+     * Publish an event to Kafka, optionally attaching the eventId as a header.
+     * The eventId is used by consumers to deduplicate messages.
+     */
+    public void publish(String topic, String key, String payload, String eventId) {
+        log.debug("Publishing event to topic: {}, key: {}, eventId: {}", topic, key, eventId);
+
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, payload);
+        if (eventId != null) {
+            record.headers().add(new RecordHeader("eventId", eventId.getBytes(StandardCharsets.UTF_8)));
+        }
+
         try {
-            kafkaTemplate.send(topic, key, payload).get(10, TimeUnit.SECONDS);
+            kafkaTemplate.send(record).get(10, TimeUnit.SECONDS);
             log.info("Event published to topic: {}", topic);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             log.error("Failed to publish event to topic: {}, error: {}", topic, e.getMessage());

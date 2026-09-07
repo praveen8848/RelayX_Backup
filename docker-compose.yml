@@ -45,6 +45,23 @@ services:
      networks:
        - relayx-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: relayx-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: relayx-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
 networks:
   relayx-network:
     driver: bridge
@@ -52,3 +69,4 @@ networks:
 volumes:
   postgres_data:
     name: relayx-postgres-data
+

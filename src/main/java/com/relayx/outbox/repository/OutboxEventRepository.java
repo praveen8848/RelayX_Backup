@@ -31,6 +31,7 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
     /**
      * Find all PENDING events that are due for processing.
      * An event is due if nextRetryAt is null (never attempted) or <= now.
+     * This query does NOT lock rows; use findDueEventsForUpdate for locking.
      */
     @Query("SELECT e FROM OutboxEvent e WHERE e.status = 'PENDING' " +
             "AND (e.nextRetryAt IS NULL OR e.nextRetryAt <= :now) " +
@@ -45,4 +46,36 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
     @Query("UPDATE OutboxEvent e SET e.status = 'PENDING', e.retryCount = 0, " +
             "e.nextRetryAt = null, e.lastError = null WHERE e.id = :id")
     void resetEventForRetry(@Param("id") Long id);
+
+    /**
+     * Select a batch of due events and lock them for processing, respecting per-aggregate ordering.
+     * Uses PostgreSQL SKIP LOCKED to allow concurrent workers without conflicts.
+     * The NOT EXISTS clause ensures only the next event in each aggregate's sequence is selected.
+     */
+    @Query(value = "SELECT e1.* FROM outbox_events e1 " +
+            "WHERE e1.status = 'PENDING' " +
+            "AND (e1.next_retry_at IS NULL OR e1.next_retry_at <= :now) " +
+            "AND NOT EXISTS (" +
+            "    SELECT 1 FROM outbox_events e2 " +
+            "    WHERE e2.aggregate_type = e1.aggregate_type " +
+            "    AND e2.aggregate_id = e1.aggregate_id " +
+            "    AND e2.sequence_number < e1.sequence_number " +
+            "    AND e2.status <> 'PUBLISHED'" +
+            ") " +
+            "ORDER BY e1.created_at ASC " +
+            "LIMIT :limit " +
+            "FOR UPDATE SKIP LOCKED", nativeQuery = true)
+    List<OutboxEvent> findDueEventsForUpdate(@Param("now") LocalDateTime now, @Param("limit") int limit);
+
+    @Query("SELECT COUNT(e) FROM OutboxEvent e WHERE e.createdAt >= :startOfDay")
+    long countEventsSince(@Param("startOfDay") LocalDateTime startOfDay);
+
+    @Query("SELECT COUNT(e) FROM OutboxEvent e WHERE e.status = 'PUBLISHED' AND e.createdAt >= :startOfDay")
+    long countPublishedSince(@Param("startOfDay") LocalDateTime startOfDay);
+
+    @Query("SELECT COUNT(e) FROM OutboxEvent e WHERE e.status = 'PENDING' AND e.retryCount > 0")
+    long countRetrying();
+
+    @Query("SELECT COUNT(e) FROM OutboxEvent e WHERE e.status = 'DEAD'")
+    long countDead();
 }

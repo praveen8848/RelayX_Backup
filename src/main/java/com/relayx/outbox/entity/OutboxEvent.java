@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_outbox_next_retry", columnList = "status, next_retry_at"),
         @Index(name = "idx_outbox_created_at", columnList = "created_at"),
         @Index(name = "idx_outbox_aggregate", columnList = "aggregate_type, aggregate_id")
+        @Index(name = "idx_outbox_aggregate_seq", columnList = "aggregate_type, aggregate_id, sequence_number")
 })
 @Getter
 @Setter
@@ -59,11 +60,18 @@ public class OutboxEvent {
     @Column(name = "next_retry_at")
     private LocalDateTime nextRetryAt;
 
+    @Column(name = "event_id", nullable = false, unique = true, length = 36)
+    private String eventId;
+
+    @Column(name = "sequence_number", nullable = false)
+    private Integer sequenceNumber;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         if (status == null) status = "PENDING";
         if (retryCount == null) retryCount = 0;
         if (maxRetryCount == null) maxRetryCount = 5; // default, can be overridden
+        if (eventId == null) eventId = java.util.UUID.randomUUID().toString();
     }
 }

@@ -70,8 +70,9 @@ management:
       show-details: always
 
 relay:
-  poll-interval-ms: 2000          # relay checks every 2 seconds
+  poll-interval-ms: 3000          # relay checks every 3 seconds
+  batch-size: 10
   retry:
     base-delay-ms: 1000           # 1 second initial delay
-    max-delay-ms: 5000            # cap at 5 seconds
-    max-attempts: 3
+    max-delay-ms: 6000            # cap at 6 seconds
+    max-attempts: 5

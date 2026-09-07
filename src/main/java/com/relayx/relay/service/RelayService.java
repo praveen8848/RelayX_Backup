@@ -1,5 +1,6 @@
 package com.relayx.relay.service;
 
+import com.relayx.common.metrics.RelayMetricsService;
 import com.relayx.outbox.entity.OutboxEvent;
 import com.relayx.outbox.repository.OutboxEventRepository;
 import com.relayx.relay.producer.KafkaEventProducer;
@@ -20,6 +21,8 @@ public class RelayService {
 
     private final OutboxEventRepository outboxEventRepository;
     private final KafkaEventProducer kafkaEventProducer;
+    private final RelayMetricsService metricsService;
+
 
     @Value("${relay.retry.base-delay-ms:1000}")
     private long baseDelayMs;
@@ -27,26 +30,34 @@ public class RelayService {
     @Value("${relay.retry.max-delay-ms:60000}")
     private long maxDelayMs;
 
+    @Value("${relay.batch-size:10}")
+    private int batchSize;
+
     @Scheduled(fixedDelayString = "${relay.poll-interval-ms:5000}")
     @Transactional
     public void relayPendingEvents() {
-        log.debug("Polling for pending outbox events...");
         LocalDateTime now = LocalDateTime.now();
-        List<OutboxEvent> dueEvents = outboxEventRepository.findDueEvents(now);
+        List<OutboxEvent> dueEvents = outboxEventRepository.findDueEventsForUpdate(now, batchSize);
 
         if (dueEvents.isEmpty()) {
             log.debug("No due events found.");
             return;
         }
 
-        log.info("Found {} due events to process.", dueEvents.size());
+        log.info("Worker {} processing {} events.", Thread.currentThread().getName(), dueEvents.size());
 
         for (OutboxEvent event : dueEvents) {
+            metricsService.incrementEventsTotal();
             try {
+                long start = System.currentTimeMillis();
                 publishEvent(event);
                 markEventPublished(event);
+                long duration = System.currentTimeMillis() - start;
+                metricsService.incrementEventsSuccess();
+                metricsService.recordDeliveryLatency(duration);
             } catch (Exception e) {
                 log.error("Failed to publish event id: {}, error: {}", event.getId(), e.getMessage());
+                metricsService.incrementEventsFailed();
                 handlePublishFailure(event, e);
             }
         }
@@ -54,7 +65,7 @@ public class RelayService {
 
     private void publishEvent(OutboxEvent event) {
         String key = event.getAggregateType() + "-" + event.getAggregateId();
-        kafkaEventProducer.publish(event.getTopic(), key, event.getPayload());
+        kafkaEventProducer.publish(event.getTopic(), key, event.getPayload(), event.getEventId());
     }
 
     private void markEventPublished(OutboxEvent event) {
@@ -91,5 +102,10 @@ public class RelayService {
         double jitter = 0.5 + Math.random() * 0.5; // 50%-100% of calculated delay
         delay = (long) (delay * jitter);
         return Math.min(delay, maxDelayMs);
+    }
+    @Scheduled(fixedDelay = 10000) // update queue size every 10 seconds
+    public void updateQueueSizeGauge() {
+        long pending = outboxEventRepository.countByStatus("PENDING");
+        metricsService.updatePendingQueueSize(pending);
     }
 }
