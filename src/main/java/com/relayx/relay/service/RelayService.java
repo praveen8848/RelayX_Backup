@@ -4,6 +4,7 @@ import com.relayx.common.metrics.RelayMetricsService;
 import com.relayx.outbox.entity.OutboxEvent;
 import com.relayx.outbox.repository.OutboxEventRepository;
 import com.relayx.relay.producer.KafkaEventProducer;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,12 +31,21 @@ public class RelayService {
     @Value("${relay.retry.max-delay-ms:60000}")
     private long maxDelayMs;
 
+    @Getter
     @Value("${relay.batch-size:10}")
     private int batchSize;
+
+    @Getter
+    @Value("${relay.poll-interval-ms:5000}")
+    private long pollIntervalMs;
+
+    @Getter
+    private volatile LocalDateTime lastPollAt;
 
     @Scheduled(fixedDelayString = "${relay.poll-interval-ms:5000}")
     @Transactional
     public void relayPendingEvents() {
+        this.lastPollAt = LocalDateTime.now();
         LocalDateTime now = LocalDateTime.now();
         List<OutboxEvent> dueEvents = outboxEventRepository.findDueEventsForUpdate(now, batchSize);
 

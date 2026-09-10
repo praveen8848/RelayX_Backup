@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_outbox_status", columnList = "status"),
         @Index(name = "idx_outbox_next_retry", columnList = "status, next_retry_at"),
         @Index(name = "idx_outbox_created_at", columnList = "created_at"),
-        @Index(name = "idx_outbox_aggregate", columnList = "aggregate_type, aggregate_id")
+        @Index(name = "idx_outbox_aggregate", columnList = "aggregate_type, aggregate_id"),
         @Index(name = "idx_outbox_aggregate_seq", columnList = "aggregate_type, aggregate_id, sequence_number")
 })
 @Getter
@@ -65,6 +65,9 @@ public class OutboxEvent {
 
     @Column(name = "sequence_number", nullable = false)
     private Integer sequenceNumber;
+
+    @Column(name = "project_id")
+    private Long projectId;
 
     @PrePersist
     protected void onCreate() {
