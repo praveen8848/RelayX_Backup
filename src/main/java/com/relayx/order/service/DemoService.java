@@ -35,25 +35,33 @@ public class DemoService {
     /**
      * Bulk-generate N outbox events quickly.
      * Each event gets a distinct aggregateId, so the relay can process them in parallel.
+     * Count is clamped to [1, 1000] to protect the database.
      */
     @Transactional
     public int generateBulkEvents(int count) {
+        if (count < 1) count = 1;
+        if (count > 1000) count = 1000;
+
+        long baseId = System.currentTimeMillis();
         List<OutboxEvent> events = new ArrayList<>(count);
+
         for (int i = 0; i < count; i++) {
-            long aggregateId = System.nanoTime() + i;  // unique enough for demo
+            long aggregateId = baseId + i;
             OutboxEvent event = OutboxEvent.builder()
                     .eventId(UUID.randomUUID().toString())
                     .aggregateType("BulkOrder")
                     .aggregateId(aggregateId)
                     .eventType("BulkOrderCreated")
                     .topic("order-events")
-                    .payload("{\"bulkIndex\":" + i + "}")
+                    .payload("{\"bulkIndex\":" + i + ",\"aggregateId\":" + aggregateId + "}")
                     .status("PENDING")
+                    .retryCount(0)
                     .maxRetryCount(maxRetryAttempts)
-                    .sequenceNumber(1)
+                    .sequenceNumber(1)   // each bulk event is its own aggregate
                     .build();
             events.add(event);
         }
+
         outboxEventRepository.saveAll(events);
         log.info("Generated {} bulk events", count);
         return count;
@@ -96,6 +104,7 @@ public class DemoService {
                 .topic("order-events")
                 .payload(payload)
                 .status("PENDING")
+                .retryCount(0)
                 .maxRetryCount(maxRetryAttempts)
                 .sequenceNumber(sequence)
                 .build();

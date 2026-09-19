@@ -73,6 +73,9 @@ relay:
   poll-interval-ms: 3000          # relay checks every 3 seconds
   batch-size: 10
   retry:
-    base-delay-ms: 1000           # 1 second initial delay
+    base-delay-ms: 1000           # 1-second initial delay
     max-delay-ms: 6000            # cap at 6 seconds
     max-attempts: 5
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
