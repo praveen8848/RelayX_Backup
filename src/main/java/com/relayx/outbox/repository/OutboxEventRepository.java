@@ -83,10 +83,10 @@ public interface OutboxEventRepository extends JpaRepository<OutboxEvent, Long> 
 
     java.util.Optional<OutboxEvent> findByEventId(String eventId);
     @Query("SELECT e FROM OutboxEvent e WHERE " +
-            "(:status IS NULL OR e.status = :status) AND " +
-            "(:aggregateType IS NULL OR e.aggregateType = :aggregateType) AND " +
-            "(:fromDate IS NULL OR e.createdAt >= :fromDate) AND " +
-            "(:toDate IS NULL OR e.createdAt <= :toDate) " +
+            "(CAST(:status AS string) IS NULL OR e.status = :status) AND " +
+            "(CAST(:aggregateType AS string) IS NULL OR e.aggregateType = :aggregateType) AND " +
+            "(CAST(:fromDate AS timestamp) IS NULL OR e.createdAt >= :fromDate) AND " +
+            "(CAST(:toDate AS timestamp) IS NULL OR e.createdAt <= :toDate) " +
             "ORDER BY e.createdAt DESC")
     Page<OutboxEvent> searchEvents(@Param("status") String status,
                                    @Param("aggregateType") String aggregateType,

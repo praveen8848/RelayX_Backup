@@ -1,13 +1,14 @@
 package com.relayx.order.controller;
 
+import com.relayx.common.simulation.SimulationState;
 import com.relayx.order.dto.OrderRequest;
 import com.relayx.order.service.OrderService;
-import com.relayx.relay.producer.KafkaEventProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 @RestController
@@ -17,27 +18,42 @@ import java.util.Map;
 public class FailureSimulationController {
 
     private final OrderService orderService;
-    private final KafkaEventProducer kafkaEventProducer;
+    private final SimulationState simulationState;
 
     /**
-     * Simulates a scenario where Kafka is down.
-     * We attempt to publish a dummy event; if Kafka is unreachable, it throws.
-     * In a real failure, the relay will later retry the outbox event.
+     * Turn the simulated Kafka outage ON.
+     * The relay will refuse to publish until /kafka-up is called.
      */
     @PostMapping("/kafka-down")
-    public ResponseEntity<Map<String, String>> simulateKafkaDown() {
-        log.warn("Simulating Kafka down: attempting to publish to a non-existent broker...");
-        try {
-            // Use a wrong port to force failure (or stop Kafka and keep same port)
-            kafkaEventProducer.publish("order-events", "simulation", "{\"test\":true}");
-            return ResponseEntity.ok(Map.of("result", "published (Kafka seems up)"));
-        } catch (Exception e) {
-            log.error("Kafka publish failed as expected: {}", e.getMessage());
-            return ResponseEntity.ok(Map.of(
-                    "result", "failed",
-                    "message", "Kafka publish failed. Outbox event would remain PENDING for retry."
-            ));
-        }
+    public ResponseEntity<Map<String, Object>> simulateKafkaDown() {
+        simulationState.setKafkaDown(true);
+        log.warn("Simulated Kafka outage ENABLED. Relay will fail all publishes until /kafka-up.");
+        return ResponseEntity.ok(Map.of(
+                "kafkaDown", true,
+                "message", "Kafka simulated as DOWN. Events will stay PENDING."
+        ));
+    }
+
+    /**
+     * Turn the simulated Kafka outage OFF.
+     * On the next relay poll, PENDING events will publish normally.
+     */
+    @PostMapping("/kafka-up")
+    public ResponseEntity<Map<String, Object>> simulateKafkaUp() {
+        simulationState.setKafkaDown(false);
+        log.info("Simulated Kafka outage DISABLED. Relay will resume publishing.");
+        return ResponseEntity.ok(Map.of(
+                "kafkaDown", false,
+                "message", "Kafka simulated as UP. Pending events will publish on the next poll."
+        ));
+    }
+
+    /**
+     * Read the current simulation state (used by the frontend badge).
+     */
+    @GetMapping("/kafka-status")
+    public ResponseEntity<Map<String, Object>> kafkaStatus() {
+        return ResponseEntity.ok(Map.of("kafkaDown", simulationState.isKafkaDown()));
     }
 
     /**
@@ -45,17 +61,20 @@ public class FailureSimulationController {
      * before the outbox event is persisted. Both should be rolled back.
      */
     @PostMapping("/db-rollback")
-    public ResponseEntity<Map<String, String>> simulateDbRollback() {
+    public ResponseEntity<Map<String, Object>> simulateDbRollback() {
         log.warn("Simulating DB rollback during order creation...");
         OrderRequest request = OrderRequest.builder()
-                .customerId("rollback-test")
-                .amount(new java.math.BigDecimal("10.00"))
+                .customerId("rollback-test-" + System.currentTimeMillis())
+                .amount(new BigDecimal("10.00"))
                 .build();
         try {
             orderService.createOrderWithRollback(request);
-            return ResponseEntity.ok(Map.of("result", "unexpected success"));
-        } catch (Exception e) {
-            log.error("Rollback occurred as expected: {}", e.getMessage());
+            return ResponseEntity.ok(Map.of(
+                    "result", "unexpected success",
+                    "message", "Transaction did NOT roll back — check @Transactional on the service."
+            ));
+        } catch (RuntimeException e) {
+            log.info("Rollback occurred as expected: {}", e.getMessage());
             return ResponseEntity.ok(Map.of(
                     "result", "rolled back",
                     "message", "Order and outbox event were NOT saved."

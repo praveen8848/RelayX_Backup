@@ -1,6 +1,7 @@
 package com.relayx.relay.service;
 
 import com.relayx.common.metrics.RelayMetricsService;
+import com.relayx.common.simulation.SimulationState;
 import com.relayx.outbox.entity.OutboxEvent;
 import com.relayx.outbox.repository.OutboxEventRepository;
 import com.relayx.relay.producer.KafkaEventProducer;
@@ -23,7 +24,7 @@ public class RelayService {
     private final OutboxEventRepository outboxEventRepository;
     private final KafkaEventProducer kafkaEventProducer;
     private final RelayMetricsService metricsService;
-
+    private final SimulationState simulationState;
 
     @Value("${relay.retry.base-delay-ms:1000}")
     private long baseDelayMs;
@@ -74,6 +75,9 @@ public class RelayService {
     }
 
     private void publishEvent(OutboxEvent event) {
+        if (simulationState.isKafkaDown()) {
+            throw new RuntimeException("Simulated Broker Connection Refused");
+        }
         String key = event.getAggregateType() + "-" + event.getAggregateId();
         kafkaEventProducer.publish(event.getTopic(), key, event.getPayload(), event.getEventId());
     }
