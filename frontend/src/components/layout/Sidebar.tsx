@@ -453,63 +453,7 @@ export default function Sidebar() {
             FOOTER
             =================================================== */}
         <div className="border-t border-border p-3">
-          <div className="grid grid-cols-2 gap-2">
-            <a
-              href="#"
-              className="
-                flex
-                items-center
-                justify-center
-                gap-2
-
-                rounded-lg
-                border
-                border-border
-
-                px-3
-                py-2
-
-                text-xs
-                text-muted
-
-                hover:bg-surfaceHover
-                hover:text-white
-
-                transition-colors
-              "
-            >
-              <Github className="w-3.5 h-3.5" />
-              GitHub
-            </a>
-
-            <a
-              href="#"
-              className="
-                flex
-                items-center
-                justify-center
-                gap-2
-
-                rounded-lg
-                border
-                border-border
-
-                px-3
-                py-2
-
-                text-xs
-                text-muted
-
-                hover:bg-surfaceHover
-                hover:text-white
-
-                transition-colors
-              "
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              Docs
-            </a>
-          </div>
+          
 
           <div
             className="

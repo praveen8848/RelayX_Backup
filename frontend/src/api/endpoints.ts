@@ -1,7 +1,7 @@
 import { apiClient } from "./client";
 
 // Toggle this to false when Spring Boot backend is running
-const USE_MOCK_DATA = false;
+const USE_MOCK_DATA = true;
 
 // --- ISOLATED MOCK DATA ---
 const mockDashboardMetrics = {

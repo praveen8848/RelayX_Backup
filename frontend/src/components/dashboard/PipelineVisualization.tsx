@@ -53,8 +53,9 @@ export default function PipelineVisualization({
     health?.components?.db?.status === 'UP' ||
     health?.components?.database?.status === 'UP';
 
-  const kafkaUp =
-    health?.components?.kafka?.status === 'UP';
+const kafkaUp =
+    health?.components?.kafka?.status === 'UP' || 
+    health?.status === 'UP';
 
   const relayActive =
     typeof relay?.secondsSinceLastPoll === 'number'

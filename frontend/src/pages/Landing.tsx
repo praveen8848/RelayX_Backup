@@ -1,997 +1,474 @@
 import { Link } from 'react-router-dom';
 import {
-  Activity,
   ArrowRight,
-  Check,
-  ChevronRight,
   Clock3,
   Database,
   FileWarning,
   GitBranch,
   Inbox,
   Play,
-  Radio,
   RefreshCcw,
-  Server,
   ShieldCheck,
-  TriangleAlert,
-  Zap,
 } from 'lucide-react';
 
+/* ========================================================================== */
+/* PAGE                                                                      */
+/* ========================================================================== */
+// Testing Git change detection
 export default function Landing() {
   return (
     <div className="min-h-full">
-      {/* ================================================================ */}
-      {/* HERO                                                             */}
-      {/* ================================================================ */}
+      <Hero />
+      <Gap />
+      <Mechanism />
+      <Guarantees />
+      <Failures />
+      <Closing />
+    </div>
+  );
+}
 
-      <section className="relative overflow-hidden">
-        {/* Background grid */}
-        <div className="pointer-events-none absolute inset-0 opacity-[0.035]">
-          <div
-            className="h-full w-full"
-            style={{
-              backgroundImage:
-                'linear-gradient(rgba(255,255,255,.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.8) 1px, transparent 1px)',
-              backgroundSize: '40px 40px',
-            }}
-          />
-        </div>
+/* ========================================================================== */
+/* HERO                                                                      */
+/* ========================================================================== */
 
-        {/* Glow */}
-        <div className="pointer-events-none absolute left-1/2 top-20 h-72 w-72 -translate-x-1/2 rounded-full bg-primary/10 blur-3xl" />
-
-        <div className="relative mx-auto max-w-6xl px-4 pb-20 pt-12 md:pb-28 md:pt-20">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_.95fr]">
-            {/* Hero copy */}
-            <div>
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                EVENT DELIVERY INFRASTRUCTURE
-              </div>
-
-              <h1 className="max-w-3xl text-4xl font-extrabold leading-[1.05] tracking-tight text-main md:text-6xl">
-                Your database committed.
-                <br />
-
-                <span className="text-muted">
-                  Your event didn't.
-                </span>
-
-                <br />
-
-                <span className="bg-gradient-to-r from-primary to-purple-400 bg-clip-text text-transparent">
-                  Now what?
-                </span>
-              </h1>
-
-              <p className="mt-6 max-w-2xl text-base leading-7 text-muted md:text-lg">
-                RelayX makes database-backed event delivery durable,
-                retryable and recoverable using the Transactional Outbox
-                Pattern.
-              </p>
-
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  to="/demo"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-white shadow-lg shadow-primary/10 transition hover:-translate-y-0.5 hover:opacity-90"
-                >
-                  <Play className="h-4 w-4 fill-current" />
-                  See the Failure
-                </Link>
-
-                <Link
-                  to="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-surface px-5 py-3 font-semibold text-main transition hover:border-primary/40 hover:bg-surfaceHover"
-                >
-                  Explore Live System
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-
-              <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted">
-                <span className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-success" />
-                  Spring Boot
-                </span>
-
-                <span className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-success" />
-                  PostgreSQL
-                </span>
-
-                <span className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-success" />
-                  Kafka
-                </span>
-
-                <span className="flex items-center gap-1.5">
-                  <Check className="h-3.5 w-3.5 text-success" />
-                  Redis
-                </span>
-              </div>
-            </div>
-
-            {/* Hero architecture visual */}
-            <HeroArchitecture />
-          </div>
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/* PROBLEM STATEMENT                                                */}
-      {/* ================================================================ */}
-
-      <section className="border-y border-border bg-surface/30">
-        <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
-          <SectionHeading
-            eyebrow="THE REAL PROBLEM"
-            title="Distributed systems fail in the gaps."
-            description="Your application may be correct. Your database may be correct. Your message broker may be correct. The failure happens between them."
-          />
-
-          <div className="mt-12 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <ProblemCard
-              number="01"
-              icon={TriangleAlert}
-              title="Event Loss"
-              text="The database commits. Kafka fails. The event disappears."
-            />
-
-            <ProblemCard
-              number="02"
-              icon={RefreshCcw}
-              title="Transient Failures"
-              text="A broker goes down for seconds. Your application shouldn't lose data."
-            />
-
-            <ProblemCard
-              number="03"
-              icon={Activity}
-              title="Duplicate Delivery"
-              text="Retries can deliver the same event more than once."
-            />
-
-            <ProblemCard
-              number="04"
-              icon={FileWarning}
-              title="Permanent Failures"
-              text="Some events keep failing and need isolation instead of infinite retries."
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/* THE FAILURE VISUAL                                              */}
-      {/* ================================================================ */}
-
-      <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-[.9fr_1.1fr]">
+function Hero() {
+  return (
+    <section className="flex min-h-screen items-center border-b border-border">
+      <div className="mx-auto w-full max-w-6xl px-6 py-20 md:py-24">
+        <div className="grid items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
-            <div className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-danger">
-              BEFORE RELAYX
+            <div className="mb-8 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              <span className="h-1.5 w-1.5 rounded-full bg-success" />
+              Transactional Outbox · v1.0
             </div>
 
-            <h2 className="text-3xl font-bold tracking-tight text-main md:text-4xl">
-              Two writes.
+            <h1 className="text-[2.75rem] font-medium leading-[1.05] tracking-tight text-main md:text-[3.75rem]">
+              Database commits.
               <br />
-              One dangerous gap.
-            </h2>
+              Events follow.
+            </h1>
 
-            <p className="mt-5 text-sm leading-7 text-muted md:text-base">
-              A common implementation saves the business record and then
-              publishes an event. They look like one operation to the
-              developer, but they are two different systems.
+            <p className="mt-8 max-w-md text-base leading-7 text-muted">
+              RelayX writes the business record and the outbox event in one
+              transaction, then publishes to Kafka asynchronously — with
+              retries, backoff, idempotency, and a dead letter queue.
             </p>
 
-            <div className="mt-7 space-y-4">
-              <FailurePoint
-                title="Database succeeds"
-                text="Order #1042 is committed."
-                success
-              />
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link
+                to="/demo"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium text-main transition hover:border-primary/40 hover:bg-surfaceHover"
+              >
+                Run the simulation
+                <Play className="h-3.5 w-3.5 " />
+                
+              </Link>
 
-              <FailurePoint
-                title="Kafka fails"
-                text="OrderCreated is never published."
-                success={false}
-              />
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium text-main transition hover:border-primary/40 hover:bg-surfaceHover"
+              >
+                View live system
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
 
-              <FailurePoint
-                title="Downstream state diverges"
-                text="Consumers never learn that the order exists."
-                success={false}
-              />
+            <div className="mt-14 flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[11px] text-muted">
+              <span>Spring Boot</span>
+              <span className="text-border">/</span>
+              <span>PostgreSQL</span>
+              <span className="text-border">/</span>
+              <span>Kafka</span>
+              <span className="text-border">/</span>
+              <span>SKIP LOCKED</span>
             </div>
           </div>
 
-          <DualWriteDiagram />
+          <RelayLog />
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* ================================================================ */}
-      {/* SOLUTION                                                         */}
-      {/* ================================================================ */}
+function RelayLog() {
+  const lines = [
+    { t: '14:02:11', s: 'poll ', m: '3 pending events', c: 'text-muted' },
+    { t: '14:02:11', s: 'relay', m: 'published   evt_928374a', c: 'text-success' },
+    { t: '14:02:13', s: 'relay', m: 'broker unreachable', c: 'text-danger' },
+    { t: '14:02:14', s: 'retry', m: 'backoff 2s · attempt 2/5', c: 'text-warning' },
+    { t: '14:02:16', s: 'relay', m: 'published   evt_837462b', c: 'text-success' },
+    { t: '14:02:16', s: 'poll ', m: '0 pending events', c: 'text-muted' },
+  ];
 
-      <section className="border-y border-border bg-surface/30">
-        <div className="mx-auto max-w-6xl px-4 py-20 md:py-28">
-          <SectionHeading
-            eyebrow="THE RELAYX APPROACH"
-            title="Move reliability into the delivery path."
-            description="The application no longer needs Kafka to be available when the database transaction commits."
-          />
+  return (
+    <div className="overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border px-4 py-3">
+        <div className="flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-success" />
+          <span className="font-mono text-[11px] text-muted">relay.log</span>
+        </div>
+        <span className="font-mono text-[11px] text-muted">live</span>
+      </div>
 
-          <div className="mt-14">
-            <OutboxDiagram />
+      <div className="divide-y divide-border">
+        {lines.map((l, i) => (
+          <div key={i} className="flex items-center gap-4 px-4 py-2.5 font-mono text-[11px]">
+            <span className="text-muted">{l.t}</span>
+            <span className="text-muted">[{l.s}]</span>
+            <span className={l.c}>{l.m}</span>
           </div>
+        ))}
+      </div>
+
+      <div className="border-t border-border px-4 py-3">
+        <div className="font-mono text-[11px] text-muted">
+          <span className="text-success">✓</span> 0 events lost · 1 retry · 0 in DLQ
         </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/* CAPABILITIES                                                     */}
-      {/* ================================================================ */}
-
-      <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
-        <SectionHeading
-          eyebrow="WHAT RELAYX HANDLES"
-          title="Failure is part of the design."
-          description="RelayX is built around what happens when distributed systems behave badly."
-        />
-
-        <div className="mt-12 grid gap-5 md:grid-cols-2">
-          <CapabilityCard
-            icon={ShieldCheck}
-            title="Transactional Outbox"
-            short="Persist first. Deliver later."
-            description="Business data and the event are committed in the same PostgreSQL transaction."
-          />
-
-          <CapabilityCard
-            icon={RefreshCcw}
-            title="Automatic Retries"
-            short="Failure doesn't mean loss."
-            description="Failed deliveries remain available for retry with exponential backoff."
-          />
-
-          <CapabilityCard
-            icon={Clock3}
-            title="Backoff"
-            short="Don't hammer a failing broker."
-            description="Retry attempts can wait progressively longer before trying again."
-          />
-
-          <CapabilityCard
-            icon={Zap}
-            title="At-Least-Once Delivery"
-            short="Prefer delivery over silent loss."
-            description="Events remain recoverable until successful publication."
-          />
-
-          <CapabilityCard
-            icon={ShieldCheck}
-            title="Idempotency"
-            short="Duplicates are expected."
-            description="Consumers can use event IDs to safely ignore events they have already processed."
-          />
-
-          <CapabilityCard
-            icon={GitBranch}
-            title="Per-Aggregate Ordering"
-            short="Related events stay ordered."
-            description="Events belonging to the same aggregate can be processed in their intended sequence."
-          />
-
-          <CapabilityCard
-            icon={FileWarning}
-            title="Dead Letter Queue"
-            short="Isolate the impossible."
-            description="Events that exhaust their retries can be moved to a DLQ for inspection and recovery."
-          />
-
-          <CapabilityCard
-            icon={Activity}
-            title="Observability"
-            short="Know what is happening."
-            description="Track pending events, delivery state, retries, failures and relay health."
-          />
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/* HOW IT WORKS                                                     */}
-      {/* ================================================================ */}
-
-      <section className="border-y border-border bg-surface/30">
-        <div className="mx-auto max-w-6xl px-4 py-20 md:py-28">
-          <SectionHeading
-            eyebrow="THE DELIVERY LIFECYCLE"
-            title="From database commit to successful delivery."
-            description="RelayX separates persistence from delivery without losing the connection between them."
-          />
-
-          <div className="mt-14 grid gap-4 md:grid-cols-5">
-            <LifecycleStep
-              number="01"
-              icon={Database}
-              title="Commit"
-              text="Order + event"
-            />
-
-            <LifecycleStep
-              number="02"
-              icon={Inbox}
-              title="Persist"
-              text="Outbox event"
-            />
-
-            <LifecycleStep
-              number="03"
-              icon={RefreshCcw}
-              title="Relay"
-              text="Poll + publish"
-            />
-
-            <LifecycleStep
-              number="04"
-              icon={Radio}
-              title="Deliver"
-              text="Kafka + consumers"
-            />
-
-            <LifecycleStep
-              number="05"
-              icon={ShieldCheck}
-              title="Recover"
-              text="Retry + idempotency"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/* FAILURE MATRIX                                                   */}
-      {/* ================================================================ */}
-
-      <section className="mx-auto max-w-6xl px-4 py-20 md:py-28">
-        <SectionHeading
-          eyebrow="FAILURE HANDLING"
-          title="What happens when things break?"
-          description="RelayX turns common distributed-system failures into explicit states that can be recovered."
-        />
-
-        <div className="mt-12 overflow-hidden rounded-2xl border border-border">
-          <div className="hidden grid-cols-[1.1fr_1fr_1fr] border-b border-border bg-surface p-4 text-xs font-semibold uppercase tracking-wide text-muted md:grid">
-            <div>Failure</div>
-            <div>Without RelayX</div>
-            <div>With RelayX</div>
-          </div>
-
-          <FailureRow
-            failure="Kafka unavailable"
-            without="Event may be lost"
-            with="Event stays in outbox"
-          />
-
-          <FailureRow
-            failure="Temporary network error"
-            without="Manual recovery"
-            with="Automatic retry"
-          />
-
-          <FailureRow
-            failure="Repeated delivery"
-            without="Duplicate side effects"
-            with="Idempotent consumer"
-          />
-
-          <FailureRow
-            failure="Permanent failure"
-            without="Repeated failures"
-            with="Dead Letter Queue"
-          />
-
-          <FailureRow
-            failure="Need to investigate"
-            without="Little visibility"
-            with="Event + retry state"
-          />
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/* VIDEO / DEMO CTA                                                 */}
-      {/* ================================================================ */}
-
-      <section className="px-4 pb-20 md:pb-28">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-3xl border border-primary/30 bg-gradient-to-br from-primary/10 via-surface to-purple-500/5 p-8 md:p-12">
-          <div className="grid items-center gap-10 md:grid-cols-[1fr_auto]">
-            <div>
-              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                DON'T JUST READ ABOUT IT
-              </div>
-
-              <h2 className="text-3xl font-bold tracking-tight text-main md:text-4xl">
-                Watch the failure happen.
-                <br />
-                Then watch RelayX recover it.
-              </h2>
-
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-muted md:text-base">
-                The interactive simulation walks through event loss, durable
-                outbox storage, retries, recovery, duplicate delivery,
-                idempotency, ordering and DLQ handling.
-              </p>
-
-              <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  to="/demo"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3 font-semibold text-white transition hover:opacity-90"
-                >
-                  <Play className="h-4 w-4 fill-current" />
-                  Run the Simulation
-                </Link>
-
-                <Link
-                  to="/dashboard"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-surface px-5 py-3 font-semibold text-main transition hover:bg-surfaceHover"
-                >
-                  Explore the Real System
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="hidden rounded-2xl border border-border bg-surface p-6 md:block">
-              <div className="text-xs uppercase tracking-wide text-muted">
-                RelayX
-              </div>
-
-              <div className="mt-3 text-2xl font-bold text-main">
-                Reliable
-                <br />
-                Event Delivery
-              </div>
-
-              <div className="mt-6 space-y-3 text-sm">
-                <Tag text="Durable" />
-                <Tag text="Retryable" />
-                <Tag text="Recoverable" />
-                <Tag text="Observable" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
     </div>
   );
 }
 
 /* ========================================================================== */
-/* HERO ARCHITECTURE                                                         */
+/* THE GAP                                                                   */
 /* ========================================================================== */
 
-function HeroArchitecture() {
+function Gap() {
   return (
-    <div className="relative">
-      <div className="rounded-2xl border border-border bg-surface/80 p-5 shadow-2xl shadow-black/20 backdrop-blur">
-        <div className="mb-5 flex items-center justify-between">
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <div className="grid gap-16 lg:grid-cols-[0.85fr_1.15fr]">
           <div>
-            <div className="text-xs font-semibold uppercase tracking-wider text-primary">
-              Event delivery
+            <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              The gap
             </div>
-            <div className="mt-1 text-sm font-semibold text-main">
-              What RelayX protects
-            </div>
+
+            <h2 className="mt-4 text-3xl font-medium leading-tight tracking-tight text-main md:text-4xl">
+              Two writes.
+              <br />
+              No atomicity.
+            </h2>
+
+            <p className="mt-6 max-w-md text-base leading-7 text-muted">
+              The naïve approach saves the record, then publishes the event.
+              They look like one operation. They are two systems. Nothing
+              guarantees they both succeed.
+            </p>
+
+            <p className="mt-4 max-w-md text-base leading-7 text-muted">
+              <span className="font-mono text-sm text-main">@Transactional</span>{' '}
+              doesn't help — Kafka is not in the transaction. XA doesn't help
+              — it's fragile, locks resources, and is rarely supported by
+              modern brokers.
+            </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-success">
-            <span className="h-2 w-2 rounded-full bg-success" />
-            protected
+          <div className="space-y-4">
+            <CodeCard
+              label="Without RelayX"
+              tone="danger"
+              footnote="The event may never be published."
+              code={`@Transactional
+void createOrder(Order order) {
+  orderRepo.save(order);           // commits
+  kafka.send("orders", order);     // may fail after commit
+}`}
+            />
+
+            <CodeCard
+              label="With RelayX"
+              tone="success"
+              footnote="The relay publishes it later, with retries."
+              code={`@Transactional
+void createOrder(Order order) {
+  orderRepo.save(order);
+  outboxRepo.save(event(order));   // same tx
+}`}
+            />
           </div>
-        </div>
-
-        <div className="space-y-3">
-          <ArchitectureNode
-            icon={Server}
-            title="Application"
-            text="Create Order"
-          />
-
-          <div className="ml-6 h-5 border-l border-primary/50" />
-
-          <ArchitectureNode
-            icon={Database}
-            title="PostgreSQL"
-            text="Order + Outbox Event"
-            highlight
-          />
-
-          <div className="ml-6 flex h-7 items-center border-l border-primary/50">
-            <div className="ml-[-1px] h-px w-8 bg-primary/50" />
-          </div>
-
-          <ArchitectureNode
-            icon={RefreshCcw}
-            title="RelayX"
-            text="Retry + Deliver"
-          />
-
-          <div className="ml-6 h-5 border-l border-primary/50" />
-
-          <ArchitectureNode
-            icon={Radio}
-            title="Kafka"
-            text="Event Stream"
-            success
-          />
-        </div>
-
-        <div className="mt-5 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs leading-5 text-muted">
-          <span className="font-semibold text-main">
-            The key idea:
-          </span>{' '}
-          the event is durable before RelayX attempts delivery.
         </div>
       </div>
-
-      {/* <div className="absolute -bottom-5 -left-5 hidden rounded-xl border border-danger/30 bg-surface p-4 shadow-xl md:block">
-        <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-danger/10 p-2">
-            <TriangleAlert className="h-4 w-4 text-danger" />
-          </div>
-
-          <div>
-            <div className="text-xs font-semibold text-main">
-              Kafka unavailable?
-            </div>
-            <div className="text-xs text-muted">
-              Event remains durable.
-            </div> 
-           </div>
-        </div>
-      </div> */}
-    </div>
+    </section>
   );
 }
 
-/* ========================================================================== */
-/* DUAL WRITE                                                                */
-/* ========================================================================== */
-
-function DualWriteDiagram() {
-  return (
-    <div className="rounded-2xl border border-danger/30 bg-danger/5 p-6 md:p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <div className="text-xs font-semibold uppercase tracking-wider text-danger">
-            Failure scenario
-          </div>
-          <div className="mt-1 font-semibold text-main">
-            Order #1042
-          </div>
-        </div>
-
-        <div className="rounded-full border border-danger/30 bg-danger/10 px-3 py-1 text-xs font-semibold text-danger">
-          INCONSISTENT
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-5">
-        <div className="flex items-center justify-center">
-          <div className="rounded-xl border border-border bg-surface p-4 text-center">
-            <Server className="mx-auto h-6 w-6 text-primary" />
-            <div className="mt-2 text-sm font-semibold text-main">
-              Application
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-success/40 bg-success/5 p-5">
-            <Database className="h-5 w-5 text-success" />
-
-            <div className="mt-3 text-sm font-semibold text-main">
-              PostgreSQL
-            </div>
-
-            <div className="mt-1 text-xs text-muted">
-              Order committed
-            </div>
-
-            <div className="mt-4 text-sm font-bold text-success">
-              ✓ SUCCESS
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-danger/50 bg-danger/10 p-5">
-            <Radio className="h-5 w-5 text-danger" />
-
-            <div className="mt-3 text-sm font-semibold text-main">
-              Kafka
-            </div>
-
-            <div className="mt-1 text-xs text-muted">
-              Broker unavailable
-            </div>
-
-            <div className="mt-4 text-sm font-bold text-danger">
-              ✕ FAILED
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg bg-danger/10 p-3 text-center text-xs font-bold uppercase tracking-wide text-danger">
-          Order exists ≠ Event exists
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ========================================================================== */
-/* OUTBOX DIAGRAM                                                            */
-/* ========================================================================== */
-
-function OutboxDiagram() {
-  return (
-    <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 md:p-8">
-      <div className="grid items-center gap-5 md:grid-cols-[1fr_auto_1.5fr_auto_1fr]">
-        <ArchitectureBlock
-          icon={Server}
-          title="Application"
-          text="Create Order"
-        />
-
-        <ArrowConnector label="transaction" />
-
-        <div className="rounded-xl border border-primary/40 bg-surface p-5">
-          <div className="mb-4 flex items-center gap-2">
-            <Database className="h-5 w-5 text-primary" />
-            <span className="font-semibold text-main">
-              PostgreSQL
-            </span>
-          </div>
-
-          <div className="space-y-2">
-            <div className="rounded-lg bg-surfaceHover p-3">
-              <div className="text-xs font-semibold text-main">
-                Order
-              </div>
-              <div className="mt-1 text-[11px] text-muted">
-                Business data
-              </div>
-            </div>
-
-            <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
-              <div className="text-xs font-semibold text-primary">
-                Outbox Event
-              </div>
-              <div className="mt-1 text-[11px] text-muted">
-                Durable event
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-md bg-success/10 px-3 py-2 text-center text-[11px] font-semibold text-success">
-            SAME TRANSACTION
-          </div>
-        </div>
-
-        <ArrowConnector label="poll + retry" />
-
-        <ArchitectureBlock
-          icon={RefreshCcw}
-          title="RelayX"
-          text="Deliver reliably"
-          highlight
-        />
-      </div>
-
-      <div className="my-6 h-px bg-border" />
-
-      <div className="flex flex-col items-center gap-4 md:flex-row md:justify-center">
-        <div className="rounded-xl border border-success/40 bg-success/5 px-6 py-4 text-center">
-          <Radio className="mx-auto h-5 w-5 text-success" />
-          <div className="mt-2 text-sm font-semibold text-main">
-            Kafka
-          </div>
-          <div className="mt-1 text-xs text-muted">
-            Event broker
-          </div>
-        </div>
-
-        <ChevronRight className="hidden h-5 w-5 text-success md:block" />
-
-        <div className="flex flex-wrap justify-center gap-2">
-          <SmallConsumer label="Notifications" />
-          <SmallConsumer label="Inventory" />
-          <SmallConsumer label="Analytics" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ========================================================================== */
-/* GENERIC COMPONENTS                                                        */
-/* ========================================================================== */
-
-function SectionHeading({
-  eyebrow,
-  title,
-  description,
+function CodeCard({
+  label,
+  tone,
+  code,
+  footnote,
 }: {
-  eyebrow: string;
-  title: string;
-  description: string;
+  label: string;
+  tone: 'danger' | 'success';
+  code: string;
+  footnote: string;
 }) {
+  const accent = tone === 'danger' ? 'text-danger' : 'text-success';
+  const dot = tone === 'danger' ? 'bg-danger' : 'bg-success';
+
   return (
-    <div className="mx-auto max-w-3xl text-center">
-      <div className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-        {eyebrow}
-      </div>
-
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-main md:text-4xl">
-        {title}
-      </h2>
-
-      <p className="mt-4 text-sm leading-7 text-muted md:text-base">
-        {description}
-      </p>
-    </div>
-  );
-}
-
-function ProblemCard({
-  number,
-  icon: Icon,
-  title,
-  text,
-}: {
-  number: string;
-  icon: typeof Activity;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="group rounded-xl border border-border bg-surface p-5 transition hover:-translate-y-1 hover:border-primary/30">
-      <div className="flex items-center justify-between">
-        <div className="rounded-lg bg-danger/10 p-2">
-          <Icon className="h-5 w-5 text-danger" />
-        </div>
-
-        <span className="font-mono text-xs text-muted">{number}</span>
-      </div>
-
-      <h3 className="mt-5 font-semibold text-main">{title}</h3>
-
-      <p className="mt-2 text-sm leading-6 text-muted">{text}</p>
-    </div>
-  );
-}
-
-function FailurePoint({
-  title,
-  text,
-  success,
-}: {
-  title: string;
-  text: string;
-  success: boolean;
-}) {
-  return (
-    <div className="flex items-start gap-3">
-      <div
-        className={`mt-0.5 rounded-full p-1 ${
-          success ? 'bg-success/10' : 'bg-danger/10'
-        }`}
-      >
-        {success ? (
-          <Check className="h-3.5 w-3.5 text-success" />
-        ) : (
-          <span className="block h-3.5 w-3.5 text-center text-xs font-bold text-danger">
-            ×
+    <div className="overflow-hidden rounded-lg border border-border bg-surface">
+      <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
+        <div className="flex items-center gap-2">
+          <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
+          <span className="font-mono text-[11px] uppercase tracking-wide text-muted">
+            {label}
           </span>
-        )}
+        </div>
+        <span className={`font-mono text-[11px] ${accent}`}>{tone}</span>
       </div>
 
-      <div>
-        <div className="text-sm font-semibold text-main">{title}</div>
-        <div className="mt-0.5 text-xs leading-5 text-muted">{text}</div>
+      <pre className="overflow-x-auto px-4 py-4 font-mono text-[12px] leading-6 text-main">
+        <code>{code}</code>
+      </pre>
+
+      <div className="border-t border-border px-4 py-2.5 font-mono text-[11px] text-muted">
+        {footnote}
       </div>
     </div>
   );
 }
 
-function CapabilityCard({
-  icon: Icon,
-  title,
-  short,
-  description,
-}: {
-  icon: typeof ShieldCheck;
-  title: string;
-  short: string;
-  description: string;
-}) {
+/* ========================================================================== */
+/* MECHANISM                                                                 */
+/* ========================================================================== */
+
+function Mechanism() {
   return (
-    <div className="group rounded-xl border border-border bg-surface p-6 transition hover:-translate-y-1 hover:border-primary/40">
-      <div className="flex items-start justify-between">
-        <div className="rounded-lg bg-primary/10 p-2.5">
-          <Icon className="h-5 w-5 text-primary" />
+    <section className="border-b border-border bg-surface/40">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+            The mechanism
+          </div>
+
+          <h2 className="mt-4 text-3xl font-medium tracking-tight text-main md:text-4xl">
+            Persist first. Deliver later.
+          </h2>
+
+          <p className="mt-6 text-base leading-7 text-muted">
+            The outbox event commits atomically with the business data. A
+            relay publishes it asynchronously and marks it delivered only
+            after Kafka acknowledges it.
+          </p>
         </div>
 
-        <ArrowRight className="h-4 w-4 text-muted opacity-0 transition group-hover:translate-x-1 group-hover:opacity-100" />
+        <OutboxFlow />
       </div>
-
-      <h3 className="mt-5 text-lg font-semibold text-main">{title}</h3>
-
-      <div className="mt-1 text-sm font-medium text-primary">{short}</div>
-
-      <p className="mt-3 text-sm leading-6 text-muted">{description}</p>
-    </div>
+    </section>
   );
 }
 
-function LifecycleStep({
-  number,
-  icon: Icon,
-  title,
-  text,
-}: {
-  number: string;
-  icon: typeof Database;
-  title: string;
-  text: string;
-}) {
+function OutboxFlow() {
+  const stages = [
+    { icon: Database, label: 'Commit', sub: 'order + event' },
+    { icon: Inbox, label: 'Persist', sub: 'outbox row' },
+    { icon: RefreshCcw, label: 'Relay', sub: 'poll + publish' },
+    { icon: ShieldCheck, label: 'Confirm', sub: 'mark delivered' },
+  ];
+
   return (
-    <div className="relative rounded-xl border border-border bg-surface p-5">
-      <div className="flex items-center justify-between">
-        <Icon className="h-5 w-5 text-primary" />
-        <span className="font-mono text-xs text-muted">{number}</span>
+    <div className="mt-16 rounded-lg border border-border bg-base">
+      <div className="grid grid-cols-1 divide-y divide-border md:grid-cols-4 md:divide-x md:divide-y-0">
+        {stages.map((s, i) => (
+          <div key={s.label} className="relative p-6">
+            <div className="flex items-center justify-between">
+              <s.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+              <span className="font-mono text-[11px] text-muted">
+                0{i + 1}
+              </span>
+            </div>
+
+            <div className="mt-8 font-medium text-main">{s.label}</div>
+            <div className="mt-1 font-mono text-[11px] text-muted">
+              {s.sub}
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div className="mt-5 font-semibold text-main">{title}</div>
-
-      <div className="mt-1 text-xs text-muted">{text}</div>
-    </div>
-  );
-}
-
-function FailureRow({
-  failure,
-  without,
-  with: withRelayX,
-}: {
-  failure: string;
-  without: string;
-  with: string;
-}) {
-  return (
-    <div className="grid gap-3 border-b border-border p-4 last:border-b-0 md:grid-cols-[1.1fr_1fr_1fr] md:items-center">
-      <div className="font-medium text-main">{failure}</div>
-
-      <div className="text-sm text-muted">
-        <span className="mr-2 md:hidden">Without:</span>
-        {without}
-      </div>
-
-      <div className="flex items-center gap-2 text-sm font-medium text-success">
-        <Check className="h-4 w-4 shrink-0" />
-        {withRelayX}
+      <div className="flex items-center justify-between border-t border-border px-6 py-4">
+        <span className="font-mono text-[11px] text-muted">
+          one transaction · durable before delivery
+        </span>
+        <span className="font-mono text-[11px] text-success">
+          at-least-once
+        </span>
       </div>
     </div>
   );
 }
 
-function ArchitectureNode({
-  icon: Icon,
-  title,
-  text,
-  highlight = false,
-  success = false,
-}: {
-  icon: typeof Server;
-  title: string;
-  text: string;
-  highlight?: boolean;
-  success?: boolean;
-}) {
+/* ========================================================================== */
+/* GUARANTEES                                                                */
+/* ========================================================================== */
+
+const GUARANTEES = [
+  {
+    icon: ShieldCheck,
+    title: 'Transactional outbox',
+    text: 'Event and business row commit in one transaction.',
+  },
+  {
+    icon: RefreshCcw,
+    title: 'Exponential backoff',
+    text: 'Failed publishes retry with jittered delay.',
+  },
+  {
+    icon: Clock3,
+    title: 'At-least-once delivery',
+    text: 'Events are never silently dropped.',
+  },
+  {
+    icon: GitBranch,
+    title: 'Per-aggregate ordering',
+    text: 'Sequence numbers preserve order within an entity.',
+  },
+  {
+    icon: Inbox,
+    title: 'Idempotent consumers',
+    text: 'Duplicate deliveries are ignored by event ID.',
+  },
+  {
+    icon: FileWarning,
+    title: 'Dead letter queue',
+    text: 'Exhausted events are isolated for recovery.',
+  },
+];
+
+function Guarantees() {
   return (
-    <div
-      className={`flex items-center gap-3 rounded-xl border p-3 ${
-        success
-          ? 'border-success/30 bg-success/5'
-          : highlight
-            ? 'border-primary/30 bg-primary/5'
-            : 'border-border bg-surfaceHover'
-      }`}
-    >
-      <div
-        className={`rounded-lg p-2 ${
-          success
-            ? 'bg-success/10'
-            : highlight
-              ? 'bg-primary/10'
-              : 'bg-surface'
-        }`}
-      >
-        <Icon
-          className={`h-4 w-4 ${
-            success
-              ? 'text-success'
-              : highlight
-                ? 'text-primary'
-                : 'text-muted'
-          }`}
-        />
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <div className="mx-auto max-w-2xl text-center">
+          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+            Guarantees
+          </div>
+
+          <h2 className="mt-4 text-3xl font-medium tracking-tight text-main md:text-4xl">
+            Failure is the baseline.
+          </h2>
+
+          <p className="mt-6 text-base leading-7 text-muted">
+            These aren't features. They're the assumptions RelayX is built
+            on.
+          </p>
+        </div>
+
+        <div className="mt-16 grid gap-px overflow-hidden rounded-lg border border-border bg-border md:grid-cols-2 lg:grid-cols-3">
+          {GUARANTEES.map((g) => (
+            <div key={g.title} className="bg-surface p-7">
+              <g.icon className="h-5 w-5 text-primary" strokeWidth={1.5} />
+
+              <div className="mt-6 font-medium text-main">{g.title}</div>
+              <p className="mt-2 text-sm leading-6 text-muted">{g.text}</p>
+            </div>
+          ))}
+        </div>
       </div>
+    </section>
+  );
+}
 
-      <div>
-        <div className="text-sm font-semibold text-main">{title}</div>
-        <div className="text-xs text-muted">{text}</div>
+/* ========================================================================== */
+/* FAILURES                                                                  */
+/* ========================================================================== */
+
+const FAILURES = [
+  ['Database commits, broker is down', 'Event stays PENDING and is retried automatically.'],
+  ['Relay crashes mid-publish', 'Event is republished on restart.'],
+  ['Same event delivered twice', 'Consumer ignores it via eventId.'],
+  ['Retries exceed the limit', 'Event moves to the Dead Letter Queue.'],
+  ['Events arrive out of order', 'Per-aggregate sequence is preserved.'],
+];
+
+function Failures() {
+  return (
+    <section className="border-b border-border">
+      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <div className="grid gap-16 lg:grid-cols-[0.7fr_1.3fr]">
+          <div>
+            <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              Behavior
+            </div>
+
+            <h2 className="mt-4 text-3xl font-medium leading-tight tracking-tight text-main md:text-4xl">
+              What happens when things break.
+            </h2>
+
+            <p className="mt-6 max-w-sm text-base leading-7 text-muted">
+              Every failure becomes an explicit state — visible in the
+              dashboard, recoverable by an operator.
+            </p>
+          </div>
+
+          <div className="divide-y divide-border border-y border-border">
+            {FAILURES.map(([f, b]) => (
+              <div
+                key={f}
+                className="grid grid-cols-1 gap-2 py-5 md:grid-cols-[1fr_1.2fr] md:gap-8"
+              >
+                <div className="text-sm font-medium text-main">{f}</div>
+                <div className="text-sm leading-6 text-muted">{b}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-function ArchitectureBlock({
-  icon: Icon,
-  title,
-  text,
-  highlight = false,
-}: {
-  icon: typeof Server;
-  title: string;
-  text: string;
-  highlight?: boolean;
-}) {
+/* ========================================================================== */
+/* CLOSING                                                                   */
+/* ========================================================================== */
+
+function Closing() {
   return (
-    <div
-      className={`rounded-xl border p-5 text-center ${
-        highlight
-          ? 'border-primary/40 bg-primary/5'
-          : 'border-border bg-surface'
-      }`}
-    >
-      <Icon
-        className={`mx-auto h-6 w-6 ${
-          highlight ? 'text-primary' : 'text-muted'
-        }`}
-      />
+    <section>
+      <div className="mx-auto max-w-6xl px-6 py-24 md:py-32">
+        <div className="flex flex-col items-start gap-10 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-3xl font-medium leading-tight tracking-tight text-main md:text-4xl">
+              See it fail.
+              <br />
+              Then see it recover.
+            </h2>
 
-      <div className="mt-3 text-sm font-semibold text-main">{title}</div>
+            <p className="mt-6 max-w-lg text-base leading-7 text-muted">
+              The interactive simulation walks through event loss, retry,
+              recovery, duplicate delivery, and DLQ handling — all against
+              the real system.
+            </p>
+          </div>
 
-      <div className="mt-1 text-xs text-muted">{text}</div>
-    </div>
-  );
-}
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/demo"
+                className="inline-flex items-center gap-2 rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium text-main transition hover:border-primary/40 hover:bg-surfaceHover"
+            >
+              Run the simulation
+              <Play className="h-3.5 w-3.5 fill-current" />
+              
+            </Link>
 
-function ArrowConnector({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-1">
-      <ArrowRight className="hidden h-5 w-5 text-primary md:block" />
-      <span className="text-[10px] font-medium uppercase tracking-wide text-muted">
-        {label}
-      </span>
-    </div>
-  );
-}
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-surface px-5 py-2.5 text-sm font-medium text-main transition hover:border-primary/40 hover:bg-surfaceHover"
+            >
+              View live system
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+          </div>
+        </div>
 
-function SmallConsumer({ label }: { label: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-surface px-4 py-2 text-xs text-muted">
-      {label}
-    </div>
-  );
-}
-
-function Tag({ text }: { text: string }) {
-  return (
-    <div className="flex items-center gap-2">
-      <Check className="h-3.5 w-3.5 text-success" />
-      <span className="text-muted">{text}</span>
-    </div>
+        <div className="mt-20 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8 font-mono text-[11px] text-muted">
+          <span>RelayX · Transactional Outbox</span>
+          <span>Database commits. Events follow.</span>
+        </div>
+      </div>
+    </section>
   );
 }
