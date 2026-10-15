@@ -165,18 +165,18 @@ export default function Architecture() {
       <header className="border-b border-border pb-10">
 
         <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-primary mb-5">
-          <Code2 className="w-4 h-4" />
+          <Code2 className="h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_#3B82F6]" />
           RELAYX / BACKEND ARCHITECTURE
         </div>
 
         <div className="grid lg:grid-cols-[1fr_360px] gap-10 items-end">
 
           <div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-white">
+            <h1  className="text-3xl font-bold tracking-tight text-white lg:text-4xl">
               Inside RelayX.
             </h1>
 
-            <p className="text-xl md:text-2xl text-slate-300 mt-5 max-w-3xl leading-relaxed">
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed">
               Follow an event from the API request to the database,
               outbox, relay, Kafka, and consumer.
             </p>

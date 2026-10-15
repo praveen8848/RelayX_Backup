@@ -81,11 +81,11 @@ const navItems: NavItem[] = [
     icon: Network,
     path: '/architecture',
   },
-  {
-    label: 'System Status',
-    icon: Server,
-    path: '/status',
-  },
+  // {
+  //   label: 'System Status',
+  //   icon: Server,
+  //   path: '/status',
+  // },
 ];
 
 export default function Sidebar() {

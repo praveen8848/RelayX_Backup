@@ -46,17 +46,31 @@ export default function Events() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-20 pb-20">
-      <header className="border-b border-border pb-6">
-        <h1 className="text-3xl font-bold tracking-tight text-white">Event Explorer</h1>
-        <p className="text-muted mt-1">Inspect the complete lifecycle of every event.</p>
-      </header>
+      <header className="flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_#3B82F6]" />
 
-      {/* Filter Bar */}
-      <div className="flex flex-wrap items-center gap-4 bg-surface p-4 rounded-xl border border-border">
-        <div className="flex items-center gap-2 text-muted">
-          <Filter className="w-4 h-4" />
-          <span className="text-sm font-medium">Filters:</span>
-        </div>
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+              RelayX Events...
+            </span>
+          </div>
+
+          <h1 className="text-3xl font-bold tracking-tight text-white lg:text-4xl">
+            Events Overview
+          </h1>
+
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+            Inspect the complete lifecycle of every event.
+          </p>
+        </div>   
+      </header>
+        {/* Filter Bar */}
+        <div className="flex flex-wrap items-center gap-4 bg-surface p-4 rounded-xl border border-border">
+          <div className="flex items-center gap-2 text-muted">
+            <Filter className="w-4 h-4" />
+            <span className="text-sm font-medium">Filters:</span>
+          </div>
         
         <select 
           className="bg-surfaceHover border border-border rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary"

@@ -41,14 +41,25 @@ export default function DLQ() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-20 pb-20">
-      <header className="border-b border-border pb-6 flex items-start justify-between">
+          <header className="flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-            <ShieldAlert className="w-8 h-8 text-danger" />
-            Dead Letter Queue
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_#3B82F6]" />
+
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+              RelayX Queue... 
+            </span>
+          </div>
+
+          <h1 className="text-3xl font-bold tracking-tight text-white lg:text-4xl">
+              Dead Letter Queue
           </h1>
-          <p className="text-muted mt-2">Events that exceeded their retry limit and require attention.</p>
+
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+           Events that exceeded their retry limit and require attention.
+          </p>
         </div>
+   
       </header>
 
       <div className="bg-surface border border-border rounded-xl overflow-hidden">

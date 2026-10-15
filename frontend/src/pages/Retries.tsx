@@ -19,14 +19,25 @@ export default function Retries() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-20 pb-20">
-      <header className="border-b border-border pb-6 flex items-start justify-between">
+      <header className="flex flex-col gap-5 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-            <RefreshCcw className="w-8 h-8 text-warning" />
-            Retry Queue
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_#3B82F6]" />
+
+            <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-primary">
+              RelayX Retrying... 
+            </span>
+          </div>
+
+          <h1 className="text-3xl font-bold tracking-tight text-white lg:text-4xl">
+              Retry Queue
           </h1>
-          <p className="text-muted mt-2">Events currently scheduled for retry using exponential backoff.</p>
+
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted">
+            Events currently scheduled for retry using exponential backoff.
+          </p>
         </div>
+   
       </header>
 
       {/* Visual Explanation of Backoff */}
